@@ -4,6 +4,11 @@ library(bslib)
 library(base64enc)
 library(shinyBS)
 
+#https://forum.posit.co/t/r-shiny-app-gallery-app-that-lets-user-upload-multiple-images-and-display-them-dynamically-multiple-images-like-a-grid/30288
+
+#https://forum.posit.co/t/download-the-output-of-shiny-with-the-download-button/24517/2
+
+
 tpfact <- read_csv("data/TPdelivery.csv") %>%
   mutate_if(is.character, as.factor)
 
