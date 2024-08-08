@@ -193,6 +193,15 @@ ui <- dashboardPage(
                         and many others")),
               hr(style = "margin-top:0px"),
               h4("Share your results! Click the download button and then upload the photos on social media."),
+              helpText("Use the image provided or upload your own image as a background."),
+              bsCollapse(id = "newPhoto",
+                         bsCollapsePanel("Change photo", style = "default", # default, info, warning
+                                         fileInput("upload", "Upload your own image", accept = c('image/png', 'image/jpeg')),
+                                         sliderInput("scale", "Adjust the size", min = 10, max = 1000, value = 600, step = 10),
+                                         sliderInput("rotation", "Fix the rotation", 0, 360, 0, step = 90),
+                                         checkboxGroupInput("effects", "Fix the orientation",
+                                                            choices = list("flip", "flop"))
+                         )),
               br(),
               imageOutput("img"),
               #span(textOutput("postText"), style = "font-size:20px; font-family:arial"),

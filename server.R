@@ -6,7 +6,7 @@ server <- function(input, output, session) {
   addCssClass(selector = "a[data-value='importance']", class = "inactiveLink")
   addCssClass(selector = "a[data-value='publicProgram']", class = "inactiveLink")
   #addCssClass(selector = "a[data-value='context']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
+  #addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
   
   # practices tab----------------
   edgeOfieldPsav <- reactiveVal()
@@ -135,12 +135,12 @@ server <- function(input, output, session) {
     netSavTransAcres <- savings() * pCreditTotalArea
     netSavTranLife <- savings() * pCreditLife
     
-    postText1(paste0("Using ", input$program, ", I transitioned ", input$acres, " acres to ", input$newPractice, ".")) 
+    postText1(paste0("Using ", input$program, ", I transitioned ", input$acres, " acres of ", input$prePractice, " to ", input$newPractice, ".")) 
     
     postText2(paste0("That resulted in ", edgeOfieldPsav," pound P/acre reduction."))
     
     
-    postText3(paste0(input$town, ", near our farm, pays around ", format(savings(), big.mark = ","), "/lb P."))
+    postText3(paste0(input$town, ", near our farm, pays around $", format(savings(), big.mark = ","), "/lb P."))
     
     postText4(paste0("That's ", round(percentPay(), 2), "% of the treatment cost."))
     
@@ -151,38 +151,69 @@ server <- function(input, output, session) {
   imageLoc <- reactiveVal("www/daylight-environment-fall-259843.jpg")
   
   imageVal <- reactive({
-    image_convert(image_read(imageLoc()), "jpeg")
+    image_convert(image_read(imageLoc()), "jpeg") %>%
+    image_scale("600")
+  })
+  
+  imageLoc2 <- reactiveVal("www/MFAI Logo White (Transparent BG).png")
+  ## convert the img location to an img value
+  imageVal2 <- reactive({
+    image_convert(image_read(imageLoc2()), "jpeg") %>%
+      image_scale("100")
+  })
+  
+  observeEvent(input$upload, {
+    if (length(input$upload$datapath)) {
+      ## set the image location
+      imageLoc(input$upload$datapath)
+    }
+    updateCheckboxGroupInput(session, "effects", selected = "")
+  })
+  
+  observe({
+    info <- image_info(imageVal())
+    updateTextInput(session, "size", value = paste0(info$width, "x", info$height, "!"))
   })
   
   updatedImageLoc <- reactive({
     ## retrieve the imageVal
     image <- imageVal()
+    logo <- imageVal2()
+    
+    if("flip" %in% input$effects)
+      image <- image_flip(image)
+    
+    if("flop" %in% input$effects)
+      image <- image_flop(image)
     
     # addText
     tmpfile <- image %>%
-      image_scale("500") %>%
+      #image_scale("600") %>%
+      image_scale(input$scale) %>%
+      image_rotate(input$rotation) %>%
+      image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
       image_annotate(text = postText1(), color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+5") %>%
+                     font = "Helvetica", size = 16, location = "+10+5") %>%
       image_annotate(text = postText2(), color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+35") %>%
+                     font = "Helvetica", size = 16, location = "+10+35") %>%
       image_annotate(text = postText3(), color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+65") %>%
+                     font = "Helvetica", size = 16, location = "+10+65") %>%
       image_annotate(text = postText4(), color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+95") %>%
+                     font = "Helvetica", size = 16, location = "+10+95") %>%
       image_annotate(text = "We're paying for clean water one way or another.", 
                      color = "white", boxcolor = "black",
                      font = "Helvetica", size = 16, location = "+5+125") %>%
       image_annotate(text = "That's why it makes so much sense for our elected officials to",
                      color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+145") %>%
+                     font = "Helvetica", size = 16, location = "+5+155") %>%
       image_annotate(text = "support farmers as they transition to conservation practices.",
                      color = "white", boxcolor = "black",
-                     font = "Helvetica", size = 16, location = "+5+165") %>%               
+                     font = "Helvetica", size = 16, location = "+5+185") %>%               
       image_annotate(text = "I calculated this from a tool at michaelfields.org/phosphorus.",
-                     color = "white", boxcolor = "black", font = "Helvetica", size = 12, location = "+5+240") %>%
+                     color = "white", boxcolor = "black", font = "Helvetica", size = 12, location = "+5+340") %>%
       image_annotate(text = "If you’re a farmer you can enter your own data, or you can see a sample scenario. 
                      Help spread the word! @michael_fields_ag",
-                     color = "white", boxcolor = "black", font = "Helvetica", size = 12, location = "+5+260") %>%
+                     color = "white", boxcolor = "black", font = "Helvetica", size = 12, location = "+5+360") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
     
     ## return only the tmp file location
