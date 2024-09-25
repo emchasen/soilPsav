@@ -22,25 +22,35 @@ ui <- dashboardPage(
                            cursor: default;
                            }")),
       menuItem(text = "Introduction", tabName = "intro"),
-      menuItem(text = "Practices on my land", tabName = "practices"),
-      menuItem(text = "My land, my phosphorus", tabName = "myP"),
-      menuItem(text = "Importance", tabName = "importance"),
-      menuItem(text = "Public program", tabName = "publicProgram"),
-      menuItem(text = "Context", tabName = "context"),
-      menuItem(text = "Share!", tabName = "share"),
-      menuItem(text = "Sample story", tabName = "sampleStory1"),
-      menuItem(text = "Sample field", tabName = "sampleField"),
-      menuItem(text = "Sample phosphorus", tabName = "sampleP"),
-      menuItem(text = "Sample importance", tabName = "sampleImportance"),
-      menuItem(text = "Compare practices", tabName = "sampleCompare"),
-      menuItem(text = "Paying", tabName = "paying"),
-      menuItem(text = "Context", tabName = "context2"),
-      menuItem(text = "Share!", tabName = "share2")
-    )
-  ),
+      menuItem(text = "I will enter my own data", tabName = "ownerLand", 
+               menuSubItem(text = "Practices on my land", tabName = "practices"),
+               menuSubItem(text = "My land, my phosphorus", tabName = "myP"),
+               menuSubItem(text = "Importance", tabName = "importance"),
+               menuSubItem(text = "Public program", tabName = "publicProgram"),
+               menuSubItem(text = "Context", tabName = "context"),
+               menuSubItem(text = "Share!", tabName = "share")),
+      menuItem(text = "Show me sample data", tabName = "sampleData",
+               menuSubItem("Sample story", tabName = "sampleStory1"),
+               menuSubItem(text = "Sample field", tabName = "sampleField"),
+               menuSubItem(text = "Sample phosphorus", tabName = "sampleP"),
+               menuSubItem(text = "Sample importance", tabName = "sampleImportance"),
+               menuSubItem(text = "Compare practices", tabName = "sampleCompare"),
+               menuSubItem(text = "Paying", tabName = "paying"),
+               menuSubItem(text = "Context", tabName = "context2"),
+               menuSubItem(text = "Share!", tabName = "share2")
+               )
+      )
+    ),
   
   dashboardBody(
     useShinyjs(),
+    # to manually open the drop down menu
+    extendShinyjs(text = "shinyjs.activateTab = function(name){
+                     setTimeout(function(){
+                       $('a[href$=' + '\"#shiny-tab-' + name + '\"' + ']').click();
+                     }, 200);
+                   }", functions = c("activateTab")
+    ),
     shinyDashboardThemes(
       theme = "poor_mans_flatly"
     ),
@@ -59,12 +69,21 @@ ui <- dashboardPage(
                       is harmful to humans and causes “dead zones” in the Gulf of Mexico and the Great Lakes."))
                        ),
                 column(4,
-                       tags$img(src = "deadFish.png", height = "200px"))
+                       tags$img(src = "deadFish.png", height = "200px"),
+                       tags$figcaption("A dead fish in a Great Lakes dead zone"))
               ),
-              h4("Agricultural practices can make a huge difference in how much phosphorus leaves a farm field. 
+              fluidRow(
+                column(6, 
+                       h4("Agricultural practices can make a huge difference in how much phosphorus leaves a farm field. 
                  Conservation programs can help farmers adopt practices that reduce phosphorus runoff."),
-              br(),
-              h4("This tool uses your data to compare the price of different ways to reduce phosphorus in surface water."),
+                 br(),
+                 h4("This tool uses your data to compare the price of different ways to reduce phosphorus in surface water.")),
+                column(6,
+                       br(),
+                       br(),
+                       tags$img(src = "deadZone.jpeg", height = "200px"),
+                       tags$figcaption("The dead zone in the Gulf of Mexico"))
+              ),
               br(),
               helpText("Use the buttons at the bottom of each page to help you navigate through this tool."),
               fluidRow(
@@ -91,7 +110,7 @@ ui <- dashboardPage(
               hr(style = "margin-top:0px"),
               numericInput(inputId = "acres", label = "How many acres did you transition to conservation practices?", value = NULL),
               textInput(inputId = "newPractice", label = "What conservation practice are you using?"),
-              textInput(inputId = "prePractice", label = "What was the previous land management?"),
+              #textInput(inputId = "prePractice", label = "What was the previous land management?"),
               numericInput(inputId = "prePloss", label = "How many pounds of P loss/ac/yr were estimated from your previous practice?", value = NULL),
               numericInput(inputId = "newPloss", label = "How many pounds of P loss/ac/yr are estimated from your conservation practice?", value = NULL),
               br(),
@@ -146,7 +165,8 @@ ui <- dashboardPage(
       tabItem(tabName = "publicProgram",
               h3(strong("I used public funds to transition to conservation practices")),
               hr(style = "margin-top:0px"),
-              selectInput(inputId = "program", label = "Program name", choices = c(" ", conservationProgramNames)),
+              selectInput(inputId = "program", label = "Program name", choices = c(" ", conservationProgramNames, "Other")),
+              uiOutput("otherProgram"),
               numericInput(inputId = "reimbursement", "Reimbursement rate ($/acre)", value = NULL),
               span(textOutput("moneyBack"), style = "font-size:20px; font-family:arial"),
               br(),
@@ -182,7 +202,11 @@ ui <- dashboardPage(
                       on pre-disaster mitigation saves $4-7 in disaster relief. Wisconsin had 17 “billion-dollar
                       disasters” from 2021-2023</i>."))),
                 column(4,
-                       tags$img(src = "bankErosion.png", height = "250px"))
+                       #uiOutput("bankErosionPhoto")
+                       tags$img(src = "bankErosion.png", height = "250px"),
+                       tags$figcaption("A road washed out after"),
+                       tags$figcaption("flooding in Vermont, 2023"))
+                #)
               ),
               br(),
               actionButton("contextButton", "Next")
@@ -197,15 +221,21 @@ ui <- dashboardPage(
               bsCollapse(id = "newPhoto",
                          bsCollapsePanel("Change photo", style = "default", # default, info, warning
                                          fileInput("upload", "Upload your own image", accept = c('image/png', 'image/jpeg')),
-                                         sliderInput("scale", "Adjust the size", min = 10, max = 1000, value = 600, step = 10),
+                                         sliderInput("scale", "Adjust the size", min = 10, max = 1000, value = 550, step = 10),
                                          sliderInput("rotation", "Fix the rotation", 0, 360, 0, step = 90),
                                          checkboxGroupInput("effects", "Fix the orientation",
                                                             choices = list("flip", "flop"))
                          )),
               br(),
-              imageOutput("img"),
+              imageOutput("img1_a"),
+              br(), br(),br(),br(),br(),br(),br(),br(),
+              imageOutput("img1_b"),
+              br(), br(),br(),br(),br(),br(),br(),br(),
+              imageOutput("img1_c"),
+              br(), br(),br(),br(),br(),br(),br(),br(),
+              imageOutput("img1_d"),
               #span(textOutput("postText"), style = "font-size:20px; font-family:arial"),
-              br(),
+              br(), br(),br(),br(),br(),br(),br(),br(),
               downloadButton(outputId = "downloadImage")),
       #sampleStory1---------------
       tabItem(tabName = "sampleStory1",
@@ -216,11 +246,12 @@ ui <- dashboardPage(
                        br(),
                        h2("How big a difference do soil health practices make in phosphorus reductions?"),
                        br(),
-                       actionButton("story1", "Next")),
+                       actionButton("sampleStory1button", "Next")),
                 column(6,
                        br(),
                        br(),
-                       tags$img(src = "rowCrop.jpg", height = "500px"))
+                       tags$img(src = "rowCrop.jpg", height = "500px"),
+                       tags$figcaption("No-till corn field in Southern Wisconsin"))
                 )
               ),
       # sample field----------------
@@ -243,7 +274,11 @@ ui <- dashboardPage(
                        br(),
                        actionButton("sampleFieldButton", "Next")),
                 column(6,
-                       tags$img(src = "sampleFarm.png")))),
+                       tags$img(src = "sampleFarm.png"),
+                       tags$figcaption("Map of the field in southern WI pictured in 
+                                       the previous slide. Outcomes from different 
+                                       practices were modeled in GrazeScape 
+                                       from UW Grassland 2.0.")))),
       # sample P-------------------
       tabItem(tabName = "sampleP",
               h3(strong("What about phosphorous?")),
@@ -260,7 +295,8 @@ ui <- dashboardPage(
                        br(),
                        actionButton("samplePbutton", "Next")),
                 column(6,
-                       tags$img(src = "sampleP.jpg"))
+                       tags$img(src = "sampleP.jpg"),
+                       tags$figcaption("The muddy waters of the Pecatonica River in June 2024"))
               )),
       #sample importance----------------
       tabItem(tabName = "sampleImportance",
@@ -293,7 +329,9 @@ ui <- dashboardPage(
                        actionButton("compareButton", "Next")),
                 column(6,
                        span(textOutput("compare1text"), style = "font-size:20px; font-family:arial; font-style:italic"),
+                       br(),
                        span(textOutput("compare2text"), style = "font-size:20px; font-family:arial; font-style:italic"),
+                       br(),
                        span(textOutput("compare3text"), style = "font-size:20px; font-family:arial; font-style:italic")))),
       # paying---------------
       tabItem(tabName = "paying",
@@ -327,17 +365,25 @@ ui <- dashboardPage(
                       on pre-disaster mitigation saves $4-7 in disaster relief. Wisconsin had 17 “billion-dollar
                       disasters” from 2021-2023</i>."))),
                 column(4,
-                       tags$img(src = "bankErosion.png", height = "250px"))
+                       tags$img(src = "bankErosion.png", height = "250px"),
+                       tags$figcaption("A road washed out after flooding in Vermont, 2023"))
               ),
               br(),
               actionButton("context2Button", "Next")),
+      # share2-------------------------
       tabItem(tabName = "share2",
               h3(strong("Help spread the word and build support for important conservation programs like EQIP, CSP, county conservation,
                         and many others")),
               hr(style = "margin-top:0px"),
               h4("Share your results! Click the download button and then upload the photos on social media."),
               br(),
-              imageOutput("img2"),
+              imageOutput("img2_a"),
+              br(),
+              imageOutput("img2_b"),
+              br(),
+              imageOutput("img2_c"),
+              br(),
+              imageOutput("img2_d"),
               #span(textOutput("postText"), style = "font-size:20px; font-family:arial"),
               br(),
               downloadButton(outputId = "downloadImage2"))
