@@ -214,19 +214,19 @@ server <- function(input, output, session) {
     image <- imageVal()
     logo <- imageVal2()
     
-    if("flip" %in% input$effects)
-      image <- image_flip(image)
-    
-    if("flop" %in% input$effects)
-      image <- image_flop(image)
+    # if("flip" %in% input$effects)
+    #   image <- image_flip(image)
+    # 
+    # if("flop" %in% input$effects)
+    #   image <- image_flop(image)
     
     wrapped_text1 <- stringr::str_wrap(postText1_1(), width = 35)
     
     # addText
     tmpfile <- image %>%
       #image_scale("600") %>%
-      image_scale(input$scale) %>%
-      image_rotate(input$rotation) %>%
+      # image_scale(input$scale) %>%
+      # image_rotate(input$rotation) %>%
       #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
       image_annotate(text = wrapped_text1, color = "black", weight = 700, #, location = "+15+40"
                      font = "Helvetica", size = 28, gravity = "west", location = "+15-40") %>%
@@ -241,11 +241,11 @@ server <- function(input, output, session) {
     image <- imageVal()
     logo <- imageVal2()
     
-    if("flip" %in% input$effects)
-      image <- image_flip(image)
-    
-    if("flop" %in% input$effects)
-      image <- image_flop(image)
+    # if("flip" %in% input$effects)
+    #   image <- image_flip(image)
+    # 
+    # if("flop" %in% input$effects)
+    #   image <- image_flop(image)
     
     wrapped_text2 <- stringr::str_wrap(postText2_1(), width = 35)
     wrapped_text3 <- stringr::str_wrap(postText3_1(), width = 35)
@@ -253,8 +253,8 @@ server <- function(input, output, session) {
     # addText
     tmpfile <- image %>%
       #image_scale("600") %>%
-      image_scale(input$scale) %>%
-      image_rotate(input$rotation) %>%
+      # image_scale(input$scale) %>%
+      # image_rotate(input$rotation) %>%
       #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
       image_annotate(text = wrapped_text2, color = "black", weight = 700,
                      font = "Helvetica", size = 24, location = "+20+60") %>%
@@ -271,11 +271,11 @@ server <- function(input, output, session) {
     image <- imageVal()
     logo <- imageVal2()
     
-    if("flip" %in% input$effects)
-      image <- image_flip(image)
-    
-    if("flop" %in% input$effects)
-      image <- image_flop(image)
+    # if("flip" %in% input$effects)
+    #   image <- image_flip(image)
+    # 
+    # if("flop" %in% input$effects)
+    #   image <- image_flop(image)
     
     slide3 <- "We’re paying for clean water one way or another. 
     That’s why it makes so much sense for elected officials to support farmers 
@@ -285,8 +285,8 @@ server <- function(input, output, session) {
     # addText
     tmpfile <- image %>%
       #image_scale("600") %>%
-      image_scale(input$scale) %>%
-      image_rotate(input$rotation) %>%
+      # image_scale(input$scale) %>%
+      # image_rotate(input$rotation) %>%
       #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
       image_annotate(text = wrapped_text3, color = "black", weight = 400,
                      font = "Helvetica", size = 24, location = "+40+150") %>%
@@ -301,11 +301,11 @@ server <- function(input, output, session) {
     image <- imageVal()
     logo <- imageVal2()
     
-    if("flip" %in% input$effects)
-      image <- image_flip(image)
-    
-    if("flop" %in% input$effects)
-      image <- image_flop(image)
+    # if("flip" %in% input$effects)
+    #   image <- image_flip(image)
+    # 
+    # if("flop" %in% input$effects)
+    #   image <- image_flop(image)
     
     slide4a <- "I calculated this data using the new MFAI Phosphorus Calculator"
     slide4b <- "Learn more and make your own calculations at michaelfields.org/phosphorus "
@@ -315,8 +315,8 @@ server <- function(input, output, session) {
     # addText
     tmpfile <- image %>%
       #image_scale("600") %>%
-      image_scale(input$scale) %>%
-      image_rotate(input$rotation) %>%
+      # image_scale(input$scale) %>%
+      # image_rotate(input$rotation) %>%
       image_composite(logo, gravity = "southwest", offset = "+20+10") %>%
       image_annotate(text = wrapped_text4a, color = "black", weight = 400,
                      font = "Helvetica", size = 26, location = "+15+75") %>%
@@ -381,10 +381,10 @@ server <- function(input, output, session) {
       temp_dir <- tempdir()
       
       # Generate and save the images in the temporary directory
-      image1_path <- file.path(temp_dir, "image1.png")
-      image2_path <- file.path(temp_dir, "image2.png")
-      image3_path <- file.path(temp_dir, "image3.png")
-      image4_path <- file.path(temp_dir, "image4.png")
+      image1_path <- file.path(temp_dir, "image1.jpeg")
+      image2_path <- file.path(temp_dir, "image2.jpeg")
+      image3_path <- file.path(temp_dir, "image3.jpeg")
+      image4_path <- file.path(temp_dir, "image4.jpeg")
       
       # Copy the images to the temporary directory
       file.copy(updatedImageLoc1_a(), image1_path)
@@ -395,7 +395,7 @@ server <- function(input, output, session) {
       # Create zip file
       orig_wd <- getwd()
       setwd(temp_dir)
-      zip(zipfile = file, files = c("image1.png", "image2.png", "image3.png", "image4.png"))
+      zip(zipfile = file, files = c("image1.jpeg", "image2.jpeg", "image3.jpeg", "image4.jpeg"))
       setwd(orig_wd)
     }
   )

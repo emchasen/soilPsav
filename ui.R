@@ -1,11 +1,6 @@
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
-  
-  # tags$head(
-  #   tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
-  # ),
  
-  
   dashboardHeader(title = "Soil Health Phosphorus Cost Savings"),
                   # tags$li(a(href = 'https://www.michaelfields.org/',
                   #           img(src = "MFAI Logo White (Transparent BG).png", height = "30px"),
@@ -43,6 +38,7 @@ ui <- dashboardPage(
     ),
   
   dashboardBody(
+    includeCSS("www/style.css"),
     useShinyjs(),
     # to manually open the drop down menu
     extendShinyjs(text = "shinyjs.activateTab = function(name){
@@ -172,7 +168,7 @@ ui <- dashboardPage(
               br(),
               fluidRow(
                 column(12,
-                       h5(HTML("We’re paying for clean water <i>one way or another</i>. 
+                       h4(HTML("We’re paying for clean water <i>one way or another</i>. 
                                That’s why it makes so much sense for our elected officials to support 
                                farmers as they transition to conservation practices.")),
                        offset = 1)
@@ -218,14 +214,14 @@ ui <- dashboardPage(
               hr(style = "margin-top:0px"),
               h4("Share your results! Click the download button and then upload the photos on social media."),
               helpText("Use the image provided or upload your own image as a background."),
-              bsCollapse(id = "newPhoto",
-                         bsCollapsePanel("Change photo", style = "default", # default, info, warning
-                                         fileInput("upload", "Upload your own image", accept = c('image/png', 'image/jpeg')),
-                                         sliderInput("scale", "Adjust the size", min = 10, max = 1000, value = 550, step = 10),
-                                         sliderInput("rotation", "Fix the rotation", 0, 360, 0, step = 90),
-                                         checkboxGroupInput("effects", "Fix the orientation",
-                                                            choices = list("flip", "flop"))
-                         )),
+              # bsCollapse(id = "newPhoto",
+              #            bsCollapsePanel("Change photo", style = "default", # default, info, warning
+              #                            fileInput("upload", "Upload your own image", accept = c('image/png', 'image/jpeg')),
+              #                            sliderInput("scale", "Adjust the size", min = 10, max = 1000, value = 550, step = 10),
+              #                            sliderInput("rotation", "Fix the rotation", 0, 360, 0, step = 90),
+              #                            checkboxGroupInput("effects", "Fix the orientation",
+              #                                               choices = list("flip", "flop"))
+              #            )),
               br(),
               imageOutput("img1_a"),
               br(), br(),br(),br(),br(),br(),br(),br(),
@@ -276,8 +272,8 @@ ui <- dashboardPage(
                 column(6,
                        tags$img(src = "sampleFarm.png"),
                        tags$figcaption("Map of the field in southern WI pictured in 
-                                       the previous slide. Outcomes from different 
-                                       practices were modeled in GrazeScape 
+                                       the previous slide. Outcomes"),
+                       tags$figcaption("from different practices were modeled in GrazeScape 
                                        from UW Grassland 2.0.")))),
       # sample P-------------------
       tabItem(tabName = "sampleP",
@@ -366,7 +362,8 @@ ui <- dashboardPage(
                       disasters” from 2021-2023</i>."))),
                 column(4,
                        tags$img(src = "bankErosion.png", height = "250px"),
-                       tags$figcaption("A road washed out after flooding in Vermont, 2023"))
+                       tags$figcaption("A road washed out after"),
+                       tags$figcaption("flooding in Vermont, 2023"))
               ),
               br(),
               actionButton("context2Button", "Next")),
@@ -378,11 +375,11 @@ ui <- dashboardPage(
               h4("Share your results! Click the download button and then upload the photos on social media."),
               br(),
               imageOutput("img2_a"),
-              br(),
+              br(), br(),br(),br(),br(),br(),br(),br(),
               imageOutput("img2_b"),
-              br(),
+              br(), br(),br(),br(),br(),br(),br(),br(),
               imageOutput("img2_c"),
-              br(),
+              br(), br(),br(),br(),br(),br(),br(),br(),
               imageOutput("img2_d"),
               #span(textOutput("postText"), style = "font-size:20px; font-family:arial"),
               br(),
