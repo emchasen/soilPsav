@@ -1,5 +1,5 @@
 
-server <- function(input, output, session) {
+server <- function(input, output, session) { # this is an edit
   
   #Disable menuitem when the app loads--------
   addCssClass(selector = "a[data-value='myP']", class = "inactiveLink")
