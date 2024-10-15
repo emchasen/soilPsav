@@ -2,12 +2,12 @@
 server <- function(input, output, session) { # this is an edit
   
   #Disable menuitem when the app loads--------
-  addCssClass(selector = "a[data-value='myP']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='importance']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='publicProgram']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='context']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
-  addCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='myP']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='importance']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='publicProgram']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='context']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
+  # addCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
   
   # practices tab----------------
   edgeOfieldPsav <- reactiveVal()
@@ -168,10 +168,10 @@ server <- function(input, output, session) { # this is an edit
     netSavTranLife <- savings() * pCreditLife
     programCost <- input$reimbursement * input$acres
     
-    postText1_1(paste("I used", input$program, "to transition", input$acres, "acres to", input$newPractice, 
+    postText1_1(paste("I used", input$program, "to transition", input$acres, "acres to", tolower(input$newPractice), 
                     "and reduced my phosphorus footprint by", edgeOfFieldPsav, "lbs.")) 
     
-    postText2_1(paste0(input$town, ", near our farm, pays around $", format(savings(), big.mark = ","), "/lb to remove
+    postText2_1(paste0(str_to_title(input$town), ", near our farm, pays around $", format(savings(), big.mark = ","), "/lb to remove
                      P from wastewater before it enters back into waterways"))
     
     postText3_1(paste0("Preventing P runnoff on my farm using ", input$program, " cost $", format(programCost, big.mark = ","), 
@@ -181,151 +181,110 @@ server <- function(input, output, session) { # this is an edit
   })
 
   #share tab------------------------------
-  imageLoc <- reactiveVal("www/SharePhoto1.png")
+  ##blank images----------------
+  image1 <- reactiveVal("www/slide1.png")
   
-  imageVal <- reactive({
-    image_convert(image_read(imageLoc()), "jpeg") %>%
+  imageVal1 <- reactive({
+    image_convert(image_read(image1()), "jpeg") %>%
     image_scale("550")
   })
   
-  imageLoc2 <- reactiveVal("www/MFAI Logo Black Transparent .png")
-  ## convert the img location to an img value
+  image2 <- reactiveVal("www/slide2.png")
+  
   imageVal2 <- reactive({
-    image_convert(image_read(imageLoc2()), "jpeg") %>%
-      image_scale("150")
+    image_convert(image_read(image2()), "jpeg") %>%
+      image_scale("550")
   })
   
-  observeEvent(input$upload, {
-    if (length(input$upload$datapath)) {
-      ## set the image location
-      imageLoc(input$upload$datapath)
-    }
-    updateCheckboxGroupInput(session, "effects", selected = "")
+  image3 <- reactiveVal("www/slide3_words.png")
+  
+  imageVal3 <- reactive({
+    image_convert(image_read(image3()), "jpeg") %>%
+      image_scale("550")
   })
   
-  observe({
-    info <- image_info(imageVal())
-    updateTextInput(session, "size", value = paste0(info$width, "x", info$height, "!"))
+  image4 <- reactiveVal("www/slide4.png")
+  
+  imageVal4 <- reactive({
+    image_convert(image_read(image4()), "jpeg") %>%
+      image_scale("550")
   })
   
+
   # image logic-------------------
+  ##slide1--------------------------
   updatedImageLoc1_a <- reactive({
     ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
+    image1 <- imageVal1()
     
-    # if("flip" %in% input$effects)
-    #   image <- image_flip(image)
-    # 
-    # if("flop" %in% input$effects)
-    #   image <- image_flop(image)
-    
-    wrapped_text1 <- stringr::str_wrap(postText1_1(), width = 35)
+    wrapped_text1 <- stringr::str_wrap(postText1_1(), width = 24)
     
     # addText
-    tmpfile <- image %>%
-      #image_scale("600") %>%
-      # image_scale(input$scale) %>%
-      # image_rotate(input$rotation) %>%
-      #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text1, color = "black", weight = 700, #, location = "+15+40"
-                     font = "Helvetica", size = 28, gravity = "west", location = "+15-40") %>%
+    tmpfile1 <- image1 %>%
+      image_annotate(text = wrapped_text1, color = "white", weight = 700, #, location = "+15+40"
+                     font = "Helvetica", size = 34, gravity = "west", location = "+80-0") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
     
     ## return only the tmp file location
-    tmpfile
+    tmpfile1
   })
   
+  ##slide2--------------
   updatedImageLoc1_b <- reactive({
     ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
+    image2 <- imageVal2()
     
-    # if("flip" %in% input$effects)
-    #   image <- image_flip(image)
-    # 
-    # if("flop" %in% input$effects)
-    #   image <- image_flop(image)
-    
-    wrapped_text2 <- stringr::str_wrap(postText2_1(), width = 35)
-    wrapped_text3 <- stringr::str_wrap(postText3_1(), width = 35)
+    wrapped_text2 <- stringr::str_wrap(postText2_1(), width = 30)
+    wrapped_text3 <- stringr::str_wrap(postText3_1(), width = 30)
     
     # addText
-    tmpfile <- image %>%
-      #image_scale("600") %>%
-      # image_scale(input$scale) %>%
-      # image_rotate(input$rotation) %>%
-      #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text2, color = "black", weight = 700,
-                     font = "Helvetica", size = 24, location = "+20+60") %>%
-      image_annotate(text = wrapped_text3, color = "black", weight = 400, 
-                     font = "Helvetica", size = 24, location = "+35+275") %>%
+    tmpfile2 <- image2 %>%
+      image_annotate(text = wrapped_text2, color = "white", weight = 700,
+                     font = "Helvetica", size = 26, location = "+75+90") %>%
+      image_annotate(text = wrapped_text3, color = "#ffbd59", weight = 700, 
+                     font = "Helvetica", size = 24, location = "+75+265") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
     
     ## return only the tmp file location
-    tmpfile
+    tmpfile2
   })
   
+  ##slide3---------------
   updatedImageLoc1_c <- reactive({
     ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
+    image3 <- imageVal3()
     
-    # if("flip" %in% input$effects)
-    #   image <- image_flip(image)
-    # 
-    # if("flop" %in% input$effects)
-    #   image <- image_flop(image)
-    
-    slide3 <- "We’re paying for clean water one way or another. 
-    That’s why it makes so much sense for elected officials to support farmers 
-    like me as we transition to conservation practices like managed grazing!"
-    wrapped_text3 <- stringr::str_wrap(slide3, width = 35)
+    # slide3 <- "We’re paying for clean water one way or another.
+    # That’s why it makes so much sense for elected officials to support farmers
+    # like me as we transition to conservation practices like managed grazing!"
+    # wrapped_text3 <- stringr::str_wrap(slide3, width = 35)
     
     # addText
-    tmpfile <- image %>%
-      #image_scale("600") %>%
-      # image_scale(input$scale) %>%
-      # image_rotate(input$rotation) %>%
-      #image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text3, color = "black", weight = 400,
-                     font = "Helvetica", size = 24, location = "+40+150") %>%
+    tmpfile3 <- image3 %>%
+      # image_annotate(text = wrapped_text3, color = "black", weight = 400,
+      #                font = "Helvetica", size = 24, location = "+40+150") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
     
     ## return only the tmp file location
-    tmpfile
+    tmpfile3
   })
   
+  ##slide4--------------
   updatedImageLoc1_d <- reactive({
     ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
-    
-    # if("flip" %in% input$effects)
-    #   image <- image_flip(image)
-    # 
-    # if("flop" %in% input$effects)
-    #   image <- image_flop(image)
-    
-    slide4a <- "I calculated this data using the new MFAI Phosphorus Calculator"
-    slide4b <- "Learn more and make your own calculations at michaelfields.org/phosphorus "
-    wrapped_text4a <- stringr::str_wrap(slide4a, width = 38)
-    wrapped_text4b <- stringr::str_wrap(slide4b, width = 38)
+    image4 <- imageVal4()
+
+    # slide4a <- "I calculated this data using the new MFAI Phosphorus Calculator"
+    # slide4b <- "Learn more and make your own calculations at michaelfields.org/phosphorus "
+    # wrapped_text4a <- stringr::str_wrap(slide4a, width = 38)
+    # wrapped_text4b <- stringr::str_wrap(slide4b, width = 38)
     
     # addText
-    tmpfile <- image %>%
-      #image_scale("600") %>%
-      # image_scale(input$scale) %>%
-      # image_rotate(input$rotation) %>%
-      image_composite(logo, gravity = "southwest", offset = "+20+10") %>%
-      image_annotate(text = wrapped_text4a, color = "black", weight = 400,
-                     font = "Helvetica", size = 26, location = "+15+75") %>%
-      image_annotate(text = wrapped_text4b, color = "black", weight = 400, 
-                     font = "Helvetica", size = 26, location = "+15+200") %>%
+    tmpfile4 <- image4 %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
     
     ## return only the tmp file location
-    tmpfile
+    tmpfile4
   })
   
   # render images-------------------
@@ -427,9 +386,9 @@ server <- function(input, output, session) { # this is an edit
   samplePsave <- reactiveVal()
   sampleCost <- reactiveVal()
   sampleCompareCost <- reactiveVal()
-  postText1_2 <- reactiveVal()
-  postText2_2 <- reactiveVal()
-  postText3_2 <- reactiveVal()
+  #postText1_2 <- reactiveVal()
+  #postText2_2 <- reactiveVal()
+  #postText3_2 <- reactiveVal()
   
   # sample practices----------------
   shinyjs::disable("compareButton")
@@ -439,13 +398,13 @@ server <- function(input, output, session) { # this is an edit
     pSave <- newPractice$Psaved
     samplePsave(pSave)
     
+    shinyjs::enable("compareButton")
+    removeCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
+    
     output$compare1text <- renderText({
       
       paste("Transitioning from corn/soy, spring cultivation, no cover crop to", tolower(input$samplePractices), "saves",
              pSave, "lbs P/acre.")
-      
-      shinyjs::enable("compareButton")
-      removeCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
       
     })
     
@@ -472,15 +431,15 @@ server <- function(input, output, session) { # this is an edit
 
     })
     
-    # text for sample photos---------------
-    postText1_2(paste("Transitioning from corn/soy, spring cultivation, no cover crop to", tolower(input$samplePractices), "saves",
-                      pSave, "lbs P/acre.")) 
-    
-    postText2_2(paste0("Using a contract from NRCS Environmental Quality Incentives Program to do ", practiceAbbr, " costs $",
-                       format(cost, big.mark = ","), "."))
-    
-    postText3_2(paste0("Compared to the nearby town's wastewater treatment cost of $1,000/lb P, the EQIP program cost just ",
-                        round(compare,2), "% of the treatment cost."))
+    # # text for sample photos
+    # postText1_2(paste("Transitioning from corn/soy, spring cultivation, no cover crop to", tolower(input$samplePractices), "saves",
+    #                   pSave, "lbs P/acre.")) 
+    # 
+    # postText2_2(paste0("Using a contract from NRCS Environmental Quality Incentives Program to do ", practiceAbbr, " costs $",
+    #                    format(cost, big.mark = ","), "."))
+    # 
+    # postText3_2(paste0("Compared to the nearby town's wastewater treatment cost of $1,000/lb P, the EQIP program cost just ",
+    #                     round(compare,2), "% of the treatment cost."))
     
     
   }, ignoreInit = TRUE)
@@ -492,133 +451,117 @@ server <- function(input, output, session) { # this is an edit
   observeEvent(input$payingButton, {
     updateTabItems(session, "tabs", "context2")
   })
+  #share 2 tab------------------------------
+  ##sample images----------------
+  sample1 <- reactiveVal("www/sample1.png")
   
-  updatedImageLoc2_a <- reactive({
-    ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
-    
-    wrapped_text1_2 <- stringr::str_wrap(postText1_2(), width = 50)
-    
-    # addText
-    tmpfile <- image %>%
-      image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text1_2, color = "black", weight = 700,
-                     font = "Helvetica", size = 24, location = "+15+40") %>%
+  imageSample1 <- reactive({
+    image_convert(image_read(sample1()), "jpeg") %>%
+      image_scale("550") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
-    
-    ## return only the tmp file location
-    tmpfile
   })
   
-  updatedImageLoc2_b <- reactive({
-    ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
-    
-    wrapped_text2 <- stringr::str_wrap(postText2_2(), width = 55)
-    wrapped_text3 <- stringr::str_wrap(postText3_2(), width = 55)
-    
-    # addText
-    tmpfile <- image %>%
-      image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text2, color = "black", weight = 700,
-                     font = "Helvetica", size = 20, location = "+10+40") %>%
-      image_annotate(text = wrapped_text3, color = "black", weight = 400, boxcolor = "#fefefe",
-                     font = "Helvetica", size = 20, location = "+10+250") %>%
+  sample2 <- reactiveVal("www/sample2.png")
+  
+  imageSample2 <- reactive({
+    image_convert(image_read(sample2()), "jpeg") %>%
+      image_scale("550") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
-    
-    ## return only the tmp file location
-    tmpfile
   })
   
-  updatedImageLoc2_c <- reactive({
-    ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
-    
-    slide3 <- "We’re paying for clean water one way or another. 
-    That’s why it makes so much sense for elected officials to support farmers 
-    like me as we transition to conservation practices like managed grazing!"
-    wrapped_text3 <- stringr::str_wrap(slide3, width = 55)
-    
-    # addText
-    tmpfile <- image %>%
-      image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text3, color = "black", weight = 500,
-                     font = "Helvetica", size = 20, location = "+10+50") %>%
+  sample3 <- reactiveVal("www/sample3.png")
+  
+  imageSample3 <- reactive({
+    image_convert(image_read(sample3()), "jpeg") %>%
+      image_scale("550") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
-    
-    ## return only the tmp file location
-    tmpfile
   })
   
-  updatedImageLoc2_d <- reactive({
-    ## retrieve the imageVal
-    image <- imageVal()
-    logo <- imageVal2()
-    
-    slide4a <- "I calculated this data using the new MFAI Phosphorus Calculator"
-    slide4b <- "Learn more and make your own calculations at michaelfields.org/phosphorus "
-    wrapped_text4a <- stringr::str_wrap(slide4a, width = 55)
-    wrapped_text4b <- stringr::str_wrap(slide4b, width = 55)
-    
-    # addText
-    tmpfile <- image %>%
-      image_composite(logo, gravity = "southeast", offset = "+20+0") %>%
-      image_annotate(text = wrapped_text4a, color = "black", weight = 500,
-                     font = "Helvetica", size = 20, location = "+10+75") %>%
-      image_annotate(text = wrapped_text4b, color = "black", weight = 500, boxcolor = "#fefefe",
-                     font = "Helvetica", size = 20, location = "+10+300") %>%
+  sample4 <- reactiveVal("www/sample4.png")
+  
+  imageSample4 <- reactive({
+    image_convert(image_read(sample4()), "jpeg") %>%
+      image_scale("550") %>%
       image_write(tempfile(fileext='jpg'), format = 'jpg')
-    
-    ## return only the tmp file location
-    tmpfile
+  })
+  
+  sample5 <- reactiveVal("www/sample5.png")
+  
+  imageSample5 <- reactive({
+    image_convert(image_read(sample5()), "jpeg") %>%
+      image_scale("550") %>%
+      image_write(tempfile(fileext='jpg'), format = 'jpg')
+  })
+  
+  sample6 <- reactiveVal("www/sample6.png")
+  
+  imageSample6 <- reactive({
+    image_convert(image_read(sample6()), "jpeg") %>%
+      image_scale("550") %>%
+      image_write(tempfile(fileext='jpg'), format = 'jpg')
   })
   
   
   observeEvent(input$context2Button, {
     
     updateTabItems(session, "tabs", "share2")
-    removeCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
-    # A plot of fixed size
-    output$img2_a <- renderImage(
-      {
-        # Return a list
-        list(src = updatedImageLoc2_a(), contentType = "image/jpeg")
-      }, 
-      ## DO NOT DELETE THE FILE!
-      deleteFile = FALSE
-    )
-    
-    output$img2_b <- renderImage(
-      {
-        # Return a list
-        list(src = updatedImageLoc2_b(), contentType = "image/jpeg")
-      }, 
-      ## DO NOT DELETE THE FILE!
-      deleteFile = FALSE
-    )
-    
-    output$img2_c <- renderImage(
-      {
-        # Return a list
-        list(src = updatedImageLoc2_c(), contentType = "image/jpeg")
-      }, 
-      ## DO NOT DELETE THE FILE!
-      deleteFile = FALSE
-    )
-    
-    output$img2_d <- renderImage(
-      {
-        # Return a list
-        list(src = updatedImageLoc2_d(), contentType = "image/jpeg")
-      }, 
-      ## DO NOT DELETE THE FILE!
-      deleteFile = FALSE
-    )
+    #removeCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
     
   })
+  
+  output$img2_a <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample1(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
+  
+  output$img2_b <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample2(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
+  
+  output$img2_c <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample3(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
+  
+  output$img2_d <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample4(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
+  
+  output$img2_e <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample5(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
+  
+  output$img2_f <- renderImage(
+    {
+      # Return a list
+      list(src = imageSample6(), contentType = "image/jpeg")
+    }, 
+    ## DO NOT DELETE THE FILE!
+    deleteFile = FALSE
+  )
   
   output$downloadImage2 <- downloadHandler(
     filename = "MFAI_sample.zip",
@@ -632,17 +575,22 @@ server <- function(input, output, session) { # this is an edit
       sample2_path <- file.path(temp_dir, "sample2.png")
       sample3_path <- file.path(temp_dir, "sample3.png")
       sample4_path <- file.path(temp_dir, "sample4.png")
+      sample5_path <- file.path(temp_dir, "sample5.png")
+      sample6_path <- file.path(temp_dir, "sample6.png")
       
       # Copy the images to the temporary directory
-      file.copy(updatedImageLoc2_a(), sample1_path)
-      file.copy(updatedImageLoc2_b(), sample2_path)
-      file.copy(updatedImageLoc2_c(), sample3_path)
-      file.copy(updatedImageLoc2_d(), sample4_path)
+      file.copy(imageSample1(), sample1_path)
+      file.copy(imageSample2(), sample2_path)
+      file.copy(imageSample3(), sample3_path)
+      file.copy(imageSample4(), sample4_path)
+      file.copy(imageSample5(), sample5_path)
+      file.copy(imageSample6(), sample6_path)
       
       # Create zip file
       orig_wd <- getwd()
       setwd(temp_dir)
-      zip(zipfile = file, files = c("sample1.png", "sample2.png", "sample3.png", "sample4.png"))
+      zip(zipfile = file, files = c("sample1.png", "sample2.png", "sample3.png", "sample4.png",
+                                    "sample5.png", "sample6.png"))
       setwd(orig_wd)
     }
   )
