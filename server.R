@@ -10,7 +10,7 @@ server <- function(input, output, session) { # this is an edit
   # addCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
   
   # practices tab----------------
-  edgeOfieldPsav <- reactiveVal()
+  edgeOfFieldPsav <- reactiveVal()
   
   observeEvent(input$selfData, {
     #toggleElement("ownerLand", "open")
@@ -19,18 +19,19 @@ server <- function(input, output, session) { # this is an edit
   })
   
   shinyjs::disable("practiceButton")
+  
   observeEvent(list(input$prePloss, input$newPloss), {
     
     req(input$acres)
     req(input$newPractice)
     req(input$prePloss)
     req(input$newPloss)
-    edgeOfieldPsav(input$prePloss - input$newPloss)
+    edgeOfFieldPsav(input$prePloss - input$newPloss)
     shinyjs::enable("practiceButton")
     
     output$edgeOfFieldText <- renderText({
       
-      paste("My new practices save", input$prePloss - input$newPloss, "lbs of phosphorus per acre from leaving my fields.")
+      paste("My new practices save", edgeOfFieldPsav(), "lbs of phosphorus per acre from leaving my fields.")
       
     })
 
@@ -45,28 +46,32 @@ server <- function(input, output, session) { # this is an edit
   
   # myP tab--------------------------------
   shinyjs::disable("myPbutton")
-  observeEvent(list(input$slope, input$streamDist), {
+  observe({
+    input$slope
+    input$streamDist
+    if(input$slope != " " & input$streamDist != " "){
+  #observeEvent(list(input$slope, input$streamDist), {
+      print(input$slope)
+      print(input$streamDist)
     
-    ##TODO can I get the text to show up after calculations?
-    req(input$slope)
-    req(input$streamDist)
-    shinyjs::enable("myPbutton")
-    TPdeliveryFactor <- filter(tpfact, domSlope == input$slope, distStream == input$streamDist)$tpfactor
-    pCreditAc <- edgeOfieldPsav() * TPdeliveryFactor
-    pCreditTotalArea <- pCreditAc * input$acres
+
+      req(input$slope)
+      req(input$streamDist)
+      shinyjs::enable("myPbutton")
+      TPdeliveryFactor <- filter(tpfact, domSlope == input$slope, distStream == input$streamDist)$tpfactor
+      pCreditAc <- edgeOfFieldPsav() * TPdeliveryFactor
+      pCreditTotalArea <- pCreditAc * input$acres
     
-    output$myPtext <- renderText({
+      output$myPtext <- renderText({
       
-      ##TODO can
-      # print(pCreditAc)
-      # req(pCreditAc > 0)
-      paste0("That means that ", TPdeliveryFactor*100, "% of P that leaves my field ends up in the nearby surface water. My conservation practices save ",
-            format(pCreditAc, big.mark = ","), " lbs P/acre from entering surface water, and a total of ", format(pCreditTotalArea, big.mark = ","),
-            " lbs P/year for the total acreage.")
-      
-    })
-    
-  }, ignoreInit = TRUE)
+        paste0("That means that ", TPdeliveryFactor*100, "% of P that leaves my field ends up in the nearby surface water. My conservation practices save ",
+              format(pCreditAc, big.mark = ","), " lbs P/acre from entering surface water, and a total of ", format(pCreditTotalArea, big.mark = ","),
+              " lbs P/year for the total acreage.")
+      })
+    }
+   
+  }) 
+  #}, ignoreInit = TRUE)
   
   observeEvent(input$myPbutton, {
     
@@ -140,44 +145,65 @@ server <- function(input, output, session) { # this is an edit
     
   })
   
-  # text reactive vals--------------
-  postText1_1 <- reactiveVal()
-  postText2_1 <- reactiveVal()
-  postText3_1 <- reactiveVal()
+  
   #postText4 <- reactiveVal()
   
   observeEvent(input$publicProgramButton, {
     
     updateTabItems(session, "tabs", "context")
-    #removeCssClass(selector = "a[data-value='context']", class = "inactiveLink")
+    removeCssClass(selector = "a[data-value='context']", class = "inactiveLink")
     removeCssClass(selector = "a[data-value='share']", class = "inactiveLink")
     
-    edgeOfFieldPsav <- input$prePloss - input$newPloss
+  })
+
+  # text reactive vals--------------
+  postText1_1 <- reactiveVal()
+  postText2_1 <- reactiveVal()
+  postText3_1 <- reactiveVal()
+  
+  observe({
+    if(input$slope != " " & input$streamDist != " " & !is.na(input$acres) & 
+       !is.na(input$reimbursement) & input$program != " "){
+    
+    print("acres")
+      print(input$acres)
+      # print("years")
+      # print(input$years)
+      # print("funds")
+      # print(input$funds)
+      print("reimburse")
+      print(input$reimbursement)
+      print("program")
+      print(input$program)
     TPdeliveryFactor <- filter(tpfact, domSlope == input$slope, distStream == input$streamDist)$tpfactor
     print(TPdeliveryFactor)
-    pCreditAc <- edgeOfFieldPsav * TPdeliveryFactor
+    pCreditAc <- edgeOfFieldPsav() * TPdeliveryFactor
     print(pCreditAc)
     pCreditTotalArea <- pCreditAc * input$acres
-    print(pCreditTotalArea)
-    pCreditLife <- pCreditTotalArea * input$years
-    print(pCreditLife)
-    dollPerLbAcYr <- input$funds/pCreditTotalArea/input$years
-    print(dollPerLbAcYr)
-    savingsComp <- savings() - dollPerLbAcYr 
+    #print(pCreditTotalArea)
+    # pCreditLife <- pCreditTotalArea * input$years
+    # #print(pCreditLife)
+    # dollPerLbAcYr <- input$funds/pCreditTotalArea/input$years
+    # #print(dollPerLbAcYr)
+    # savingsComp <- savings() - dollPerLbAcYr
     netSavTransAcres <- savings() * pCreditTotalArea
-    netSavTranLife <- savings() * pCreditLife
+    print(netSavTransAcres)
+    #netSavTranLife <- savings() * pCreditLife
+    #print(netSavTranLife)
     programCost <- input$reimbursement * input$acres
+    print(programCost)
     
-    postText1_1(paste("I used", input$program, "to transition", input$acres, "acres to", tolower(input$newPractice), 
-                    "and reduced my phosphorus footprint by", edgeOfFieldPsav, "lbs.")) 
-    
+
+    postText1_1(paste("I used", input$program, "to transition", input$acres, "acres to", tolower(input$newPractice),
+                    "and reduced my phosphorus footprint by", edgeOfFieldPsav(), "lbs."))
+
     postText2_1(paste0(str_to_title(input$town), ", near our farm, pays around $", format(savings(), big.mark = ","), "/lb to remove
                      P from wastewater before it enters back into waterways"))
-    
-    postText3_1(paste0("Preventing P runnoff on my farm using ", input$program, " cost $", format(programCost, big.mark = ","), 
+
+    postText3_1(paste0("Preventing P runnoff on my farm using ", input$program, " cost $", format(programCost, big.mark = ","),
                      ". That's just ", round(percentPay(), 2), "% of the cost of municipal P treatment."))
-    
-    
+    }
+
   })
 
   #share tab------------------------------
@@ -217,7 +243,7 @@ server <- function(input, output, session) { # this is an edit
     ## retrieve the imageVal
     image1 <- imageVal1()
     
-    wrapped_text1 <- stringr::str_wrap(postText1_1(), width = 24)
+    wrapped_text1 <- stringr::str_wrap(postText1_1(), width = 23)
     
     # addText
     tmpfile1 <- image1 %>%
@@ -292,6 +318,12 @@ server <- function(input, output, session) { # this is an edit
     
     updateTabItems(session, "tabs", "share")
     removeCssClass(selector = "a[data-value='share']", class = "inactiveLink")
+    
+  })
+  
+  observe({ ##TODO change so that observeEvents are for tabUpdates and observe does the work
+    if(input$tabs == "context") {
+  
     # A plot of fixed size
     output$img1_a <- renderImage(
       {
@@ -328,6 +360,7 @@ server <- function(input, output, session) { # this is an edit
       ## DO NOT DELETE THE FILE!
       deleteFile = FALSE
     )
+    }
     
   })
   

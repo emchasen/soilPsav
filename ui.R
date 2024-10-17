@@ -252,7 +252,10 @@ ui <- dashboardPage(
                         and many others")),
                        hr(style = "margin-top:0px"),
                        h3("Share your results! Click the download button and then upload the photos on social media."),
-                       h3("Be sure to tag us! We love to hear your stories"), 
+                       h4("Be sure to tag us!"),
+                       h4("IG: ", tags$a(href="https://www.instagram.com/michael_fields_ag/#", "@michael_fields_ag")),
+                       h4("FB: ", tags$a(href="https://www.facebook.com/MichaelFieldsAgriculturalInstitute", "@Michael Fields Agricultural Institute")),
+                       h4("We love to see your stories!"), 
                        br(),
                        imageOutput("img1_a"),
                        br(), br(),br(),br(),br(),br(),br(),br(),
@@ -329,12 +332,7 @@ ui <- dashboardPage(
                                 br(),
                                 br(),
                                 h3(HTML("<b>Edge-of-field phosphorus loss:</b> 7.86 lbs/P/ac, 801.72 lbs P/year")),
-                                h3(HTML("<b>Phosphorus delivered to stream:</b> 7.15 lbs P/ac, 735 lbs P/year"))
-                                # br(),
-                                # br(),
-                                # br(),
-                                # br(),
-                                ),
+                                h3(HTML("<b>Phosphorus delivered to stream:</b> 7.15 lbs P/ac, 735 lbs P/year"))),
                          column(6,
                                 tags$img(src = "sampleP.jpg", height = "450px"),
                                 tags$figcaption("The muddy waters of the Pecatonica River in June 2024"))
@@ -403,8 +401,9 @@ ui <- dashboardPage(
                        h2(strong("Using public funds to help transition more acres to conservation practices saves money")),
                        hr(style = "margin-top:0px"),
                        br(),
-                       h3(HTML("We're paying for clean water <i>one way or another</i>. That's why it makes so much sense
-                      for our elected officials to support farmers as they transition to conservation practices.")),
+                       h3(HTML("We're paying for clean water <i>one way or another</i>.")),
+                       h3("That's why it makes so much sense for our elected officials to support farmers 
+                          as they transition to conservation practices."),
                       br(),
                       br(),
                       actionButton("payingButton", "Next"))),
@@ -457,8 +456,11 @@ ui <- dashboardPage(
                        h2(strong("Help spread the word and build support for important conservation programs like EQIP, CSP, county conservation,
                         and many others")),
                        hr(style = "margin-top:0px"),
-                       h3("Share your results! Click the download button and then upload the photos on social media."),
-                       h3("Be sure to tag us! We love to hear your stories"), 
+                       h3("Share this story! Click the download button and then upload the photos on social media."),
+                       h4("Be sure to tag us!"),
+                       h4("IG: ", tags$a(href="https://www.instagram.com/michael_fields_ag/#", "@michael_fields_ag")),
+                       h4("FB: ", tags$a(href="https://www.facebook.com/MichaelFieldsAgriculturalInstitute", "@Michael Fields Agricultural Institute")),
+                       h4("We love to see your stories!"), 
                        br(),
                        imageOutput("img2_a"),
                        br(), br(),br(),br(),br(),br(),br(),br(),
@@ -482,50 +484,4 @@ ui <- dashboardPage(
   )
 )
 
-   
-    # bsCollapse(id = "inputs",
-    #            bsCollapsePanel("Practices and P loss", 
-    #                            textInput(inputId = "prePractice", label = "Previous practice"),
-    #                            numericInput(inputId = "prePloss", label = "Previous practice P loss/ac/yr", value = 0),
-    #                            textInput(inputId = "newPractice", label = "New practice"),
-    #                            numericInput(inputId = "newPloss", label = "New practice P loss/ac/yr", value = 0),
-    #                            style = "success"),
-    #            bsCollapsePanel("Site characteristics", 
-    #                            selectInput(inputId = "slope", label = "Dominant slope", choices = c("0-2%", "2-6%", "6-12%", ">12%")),
-    #                            selectInput(inputId = "streamDist", label = "Distance from stream", choices = c("0-300 ft", "300-1,000 ft", "1,001-5,000 ft", "5,001-10,000 ft", "10,001-20,000 ft", ">20,000 ft")),
-    #                            numericInput(inputId = "acres", label = "Acres transitioned", value = 0),
-    #                            style = "success"),
-    #            bsCollapsePanel("Program characteristics",
-    #                            textInput(inputId = "program", label = "Program name"),
-    #                            numericInput(inputId = "funds", label = "Public funds of cost-share project", value = 0),
-    #                            numericInput(inputId = "years", label = "Number of years new practice will be in place", value = 0),
-    #                            style = "success"),
-    #            bsCollapsePanel("Geography",
-    #                            textInput(inputId = "town", label = "Nearby downstream municipality"),
-    #                            numericInput(inputId = "population", label = "Population of nearby downstream municipality", value = 0),
-    #                            style = "success")
-    # ),
-    # ##TODO will have action button disabled until photo upload?
-    # #disabled(
-    # actionButton(inputId = "calc", "Calculate"),
-    # #),
-    # br(),
-    # br(),
-    # fileInput(inputId = "upload", label = "Upload an image of your farm", accept = c('image/png', 'image/jpeg')),
-    # 
-    #   #fluidRow(
-    #   # column(1,
-    #   img(src = "MFAI Logo Black Transparent .png"),
-    #   textOutput("postText1"),
-    #   br(),
-    #   textOutput("postText2"),
-    #   br(),
-    #   textOutput("postText3"),
-    #   br(),
-    #   #imageOutput("image",width = 300, height = 500),
-    #   # #textInput("txt", "Enter the text to display below:",
-    #   # #          value = 52),
-    #   downloadButton('downloadImage', 'Download Image')
-#     
-#   )
-# )
+  
