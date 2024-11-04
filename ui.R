@@ -68,17 +68,17 @@ ui <- dashboardPage(
                                    Conservation programs can help farmers adopt practices that reduce phosphorus runoff."),
                                 h3("This tool uses your data to compare the price of different ways to reduce phosphorus in surface water.")),
                          column(4,
+                                tags$img(src = "deadZone.jpeg", height = "200px"),
+                                tags$figcaption("The dead zone in the Gulf of Mexico"),
+                                br(),
                                 tags$img(src = "deadFish.png", height = "250px"),
                                 tags$figcaption("A dead fish in a Great Lakes dead zone"))),
                       helpText("Use the buttons at the bottom of each page to help you navigate through this tool."),
                       fluidRow(
-                        column(width = 3,
+                        column(width = 4,
                                actionButton("selfData", label = "I will enter my own data")),
                         column(width = 3,
-                               actionButton("sampleData", "Show me sample data")),
-                        column(width = 3, offset = 1,
-                               tags$img(src = "deadZone.jpeg", height = "200px"),
-                               tags$figcaption("The dead zone in the Gulf of Mexico"))
+                               actionButton("sampleData", "Show me sample data"))
                         )
                       )
                 ),
@@ -98,15 +98,17 @@ ui <- dashboardPage(
                            numericInput(inputId = "acres", label = "How many acres did you transition to conservation practices?", value = NULL),
                            tags$style("#acres {font-size:14px;}")),
                        div(style = "font-size:16px",
-                           textInput(inputId = "newPractice", label = "What conservation practice are you using?"),
+                           textInput(inputId = "newPractice", label = HTML(paste0("What conservation practice are you using?",tags$sup("1")))),
                            tags$style("#newPractice {font-size:14px;}")),
+                       helpText(HTML(paste0(tags$sup("1"), "Examples include: grazing, cover crops, no-till, reduced tillage, buffer strips, and grassed waterways."))),
                        div(style = "font-size:16px",
-                           numericInput(inputId = "prePloss", label = "How many pounds of P loss/ac/yr were estimated from your previous practice?*", value = NULL),
+                           numericInput(inputId = "prePloss", label = HTML(paste0("How many pounds of P loss/ac/yr were estimated from your previous practice?", tags$sup("2"))), value = NULL),
                            tags$style("#prePloss {font-size:14px;}")),
                        div(style = "font-size:16px",
-                           numericInput(inputId = "newPloss", label = "How many pounds of P loss/ac/yr are estimated from your conservation practice?*", value = NULL),
+                           numericInput(inputId = "newPloss", label = HTML(paste0("How many pounds of P loss/ac/yr are estimated from your conservation practice?", tags$sup("2"))), value = NULL),
                            tags$style("#newPloss {font-size:14px;}")),
-                       helpText("*To determine your P loss/ac/yr, create a scenario at https://scapetools.grasslandag.org/"),
+                       helpText(HTML(paste0(tags$sup("2"), "To determine your P loss/ac/yr, create a scenario with", tags$a(href="https://snapplus.wisc.edu/", " SnapPlus"), ", or ",
+                                            tags$a(href="https://scapetools.grasslandag.org/", "GrazeScape.")), "If you are outside of Wisconsin, work with your technical service provider.")),
                        br(),
                        span(textOutput("edgeOfFieldText"), style = "font-size:24px; font-family:arial; font-style:italic"),
                        br(),
@@ -124,20 +126,22 @@ ui <- dashboardPage(
                         h2(strong("My land, my phosphorous")),
                         hr(style = "margin-top:0px"),
                         h3("How much edge-of-field P runoff is delivered to surface water depends on a couple of key factors:"),
-                        h3("1) average slope along the flow path to the stream"),
+                        h3(HTML(paste0("1) average slope along the flow path to the stream", tags$sup("1")))),
                         fluidRow(
                           column(12,
                                  div(style = "font-size:16px",
                                      selectInput(inputId = "slope", label = "My average slope", choices = c(" ", "0-2%", "2-6%", "6-12%", ">12%")),
                                      offset = 2))
                         ),
-                        h3("2) distance from the stream"),
+                        h3(HTML(paste0("2) distance from the stream", tags$sup("1")))),
                         fluidRow(
                           column(12,
                                  div(style = "font-size:16px",
                                      selectInput(inputId = "streamDist", label = "My distance from the stream", choices = c(" ", "0-300 ft", "300-1,000 ft", "1,001-5,000 ft", "5,001-10,000 ft", "10,001-20,000 ft", ">20,000 ft")),
                                      offset = 2))
                         ),
+                        helpText(HTML(paste0("To find slope and stream distance, visit the ", tags$a(href = "https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx", 
+                                                                                                     "Web Soil Survey")))),
                         span(textOutput("myPtext"), style = "font-size:24px; font-family:arial; font-style:italic"),
                         br(),
                         actionButton("myPbutton", "Next")
@@ -186,7 +190,8 @@ ui <- dashboardPage(
                        h2(strong("Public funds I used to transition to conservation practices")),
                        hr(style = "margin-top:0px"),
                        div(style = "font-size:16px",
-                           selectInput(inputId = "program", label = "Program name", choices = c(" ", conservationProgramNames, "Other"))),
+                           selectInput(inputId = "program", label = "Program name", 
+                                       choices = conservationProgramNames)), #multiple = TRUE, selected = " ")),
                        uiOutput("otherProgram"),
                        div(style = "font-size:16px",
                            numericInput(inputId = "reimbursement", "Reimbursement rate ($/acre)", value = NULL),
@@ -195,7 +200,7 @@ ui <- dashboardPage(
                        fluidRow(
                          column(9, 
                                 span(textOutput("moneyBack"), style = "font-size:24px; font-family:arial"),
-                                br(),
+                                #br(),
                                 h3(HTML("We’re paying for clean water <i>one way or another</i>. 
                                That’s why it makes so much sense for our elected officials to support 
                                farmers as they transition to conservation practices.")))),
@@ -233,8 +238,8 @@ ui <- dashboardPage(
                       disasters” from 2021-2023</i>.")))),
                    column(3,
                           tags$img(src = "bankErosion.png", height = "250px"),
-                          tags$figcaption("A road washed out after"),
-                          tags$figcaption("flooding in Vermont, 2023"))
+                          tags$figcaption("A road washed out after flooding in Vermont, 2023"))#,
+                          #tags$figcaption(""))
                  ),
                  br(),
                  actionButton("contextButton", "Next"))
@@ -312,9 +317,10 @@ ui <- dashboardPage(
                          column(6,
                                 tags$img(src = "sampleFarm.png"),
                                 tags$figcaption("Map of the field in southern WI pictured in 
-                                       the previous slide. Outcomes"),
-                                tags$figcaption("from different practices were modeled in GrazeScape 
-                                       from UW Grassland 2.0."))
+                                       the previous slide. Outcomes from different practices were
+                                       modeled in GrazeScape from UW Grassland 2.0.")#,
+                                #tags$figcaption("")
+                                )
                          )
                        )),
               fluidRow(
@@ -438,8 +444,7 @@ ui <- dashboardPage(
                       disasters” from 2021-2023</i>.")))),
                    column(3,
                           tags$img(src = "bankErosion.png", height = "250px"),
-                          tags$figcaption("A road washed out after"),
-                          tags$figcaption("flooding in Vermont, 2023"))
+                          tags$figcaption("A road washed out after flooding in Vermont, 2023"))
                  ),
                  br(),
                  actionButton("context2Button", "Next"))

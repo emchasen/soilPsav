@@ -2,11 +2,11 @@
 server <- function(input, output, session) { # this is an edit
   
   #Disable menuitem when the app loads--------
-  # addCssClass(selector = "a[data-value='myP']", class = "inactiveLink")
-  # addCssClass(selector = "a[data-value='importance']", class = "inactiveLink")
-  # addCssClass(selector = "a[data-value='publicProgram']", class = "inactiveLink")
-  # addCssClass(selector = "a[data-value='context']", class = "inactiveLink")
-  # addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
+  addCssClass(selector = "a[data-value='myP']", class = "inactiveLink")
+  addCssClass(selector = "a[data-value='importance']", class = "inactiveLink")
+  addCssClass(selector = "a[data-value='publicProgram']", class = "inactiveLink")
+  addCssClass(selector = "a[data-value='context']", class = "inactiveLink")
+  addCssClass(selector = "a[data-value='share']", class = "inactiveLink")
   # addCssClass(selector = "a[data-value='share2']", class = "inactiveLink")
   
   # practices tab----------------
@@ -22,12 +22,13 @@ server <- function(input, output, session) { # this is an edit
   
   observeEvent(list(input$prePloss, input$newPloss), {
     
-    req(input$acres)
-    req(input$newPractice)
-    req(input$prePloss)
-    req(input$newPloss)
-    edgeOfFieldPsav(input$prePloss - input$newPloss)
-    shinyjs::enable("practiceButton")
+    # req(input$acres)
+    # req(input$newPractice)
+    # req(input$prePloss)
+    # req(input$newPloss)
+    psav <- round((input$prePloss - input$newPloss)/1.2, 1)
+    edgeOfFieldPsav(psav)
+    #shinyjs::enable("practiceButton")
     
     output$edgeOfFieldText <- renderText({
       
@@ -36,6 +37,15 @@ server <- function(input, output, session) { # this is an edit
     })
 
   }, ignoreInit = TRUE)
+  
+  observe({
+    req(input$acres)
+    req(input$newPractice)
+    req(input$prePloss)
+    req(input$newPloss)
+    
+    shinyjs::enable("practiceButton")
+  })
   
   observeEvent(input$practiceButton, {
     
@@ -124,6 +134,9 @@ server <- function(input, output, session) { # this is an edit
     #(40 acres at $25/acre) by the P savings from one acre (4 lbs) 
     #instead of the P savings for the whole project (160 lbs).
     
+    #programs <- input$program
+    #print(programs)
+    #print(length(programs))
     programName <- if(input$program == "Other") {
       input$otherProgramName
     } else (input$program)
@@ -163,18 +176,28 @@ server <- function(input, output, session) { # this is an edit
   
   observe({
     if(input$slope != " " & input$streamDist != " " & !is.na(input$acres) & 
-       !is.na(input$reimbursement) & input$program != " "){
+       !is.na(input$reimbursement) & input$program != " "){ 
     
-    print("acres")
-      print(input$acres)
-      # print("years")
-      # print(input$years)
-      # print("funds")
-      # print(input$funds)
-      print("reimburse")
-      print(input$reimbursement)
-      print("program")
-      print(input$program)
+    
+    #print("acres")
+    #0 print(input$acres)
+    # print("years")
+    # print(input$years)
+    # print("funds")
+    # print(input$funds)
+    print("reimburse")
+    print(input$reimbursement)
+    print("program")
+    print(input$program)
+    programName <- if(input$program == "NRCS Agricultural Conservation Easement Program (ACEP)") { 
+      "ACEP" }else if(input$program == "NRCS Conservation Reserve Enhancement Program (CREP)") {
+        "CREP"} else if(input$program == "NRCS Conservation Reserve Program (CRP)") {
+          "CRP"} else if(input$program == "NRCS Conservation Stewardship Program (CSP)") {
+            "CSP"} else if(input$program == "NRCS Environmental Quality Incentives Program (EQIP)") {
+              "EQIP"} else if(input$program == "Other") {
+                input$otherProgramName} else {
+                  input$program}
+    print(programName)
     TPdeliveryFactor <- filter(tpfact, domSlope == input$slope, distStream == input$streamDist)$tpfactor
     print(TPdeliveryFactor)
     pCreditAc <- edgeOfFieldPsav() * TPdeliveryFactor
@@ -194,13 +217,13 @@ server <- function(input, output, session) { # this is an edit
     print(programCost)
     
 
-    postText1_1(paste("I used", input$program, "to transition", input$acres, "acres to", tolower(input$newPractice),
-                    "and reduced my phosphorus footprint by", edgeOfFieldPsav(), "lbs."))
+    postText1_1(paste("I used", programName, "to transition", input$acres, "acres to", tolower(input$newPractice),
+                    "and reduced my phosphorus footprint by", edgeOfFieldPsav(), "lbs/acre."))
 
     postText2_1(paste0(str_to_title(input$town), ", near our farm, pays around $", format(savings(), big.mark = ","), "/lb to remove
                      P from wastewater before it enters back into waterways"))
 
-    postText3_1(paste0("Preventing P runnoff on my farm using ", input$program, " cost $", format(programCost, big.mark = ","),
+    postText3_1(paste0("Preventing P runnoff on my farm using ", programName, " cost $", format(programCost, big.mark = ","),
                      ". That's just ", round(percentPay(), 2), "% of the cost of municipal P treatment."))
     }
 
@@ -222,7 +245,7 @@ server <- function(input, output, session) { # this is an edit
       image_scale("550")
   })
   
-  image3 <- reactiveVal("www/slide3_words.png")
+  image3 <- reactiveVal("www/slide3.png")
   
   imageVal3 <- reactive({
     image_convert(image_read(image3()), "jpeg") %>%
