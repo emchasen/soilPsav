@@ -119,14 +119,16 @@ server <- function(input, output, session) { # this is an edit
   # publicProgram tab------------------------
   percentPay <- reactiveVal()
   shinyjs::disable("publicProgramButton")
-  observeEvent(input$reimbursement, {
-    
+  #observeEvent(input$reimbursement, {
+  observe({
+     
     req(input$program)
+    req(input$reimbursement)
 
     shinyjs::enable("publicProgramButton")
    
     reimbursed <- input$reimbursement * input$acres
-    projectPsavings <- (input$prePloss - input$newPloss)*input$acres
+    projectPsavings <- edgeOfFieldPsav()*input$acres
     conservationCost <- reimbursed/projectPsavings ##TODO check that this is the function?
     percentPay <- 100*(conservationCost/savings()) ##TODO check that this is the function?
     percentPay(percentPay)
@@ -148,7 +150,7 @@ server <- function(input, output, session) { # this is an edit
              That is ", round(percentPay, 2), "% of what ", input$town, " pays to remove P from wastewater.")
     })
 
-  }, ignoreInit = TRUE)
+  })#, ignoreInit = TRUE)
   
   output$otherProgram <- renderUI({
     
@@ -178,17 +180,6 @@ server <- function(input, output, session) { # this is an edit
     if(input$slope != " " & input$streamDist != " " & !is.na(input$acres) & 
        !is.na(input$reimbursement) & input$program != " "){ 
     
-    
-    #print("acres")
-    #0 print(input$acres)
-    # print("years")
-    # print(input$years)
-    # print("funds")
-    # print(input$funds)
-    print("reimburse")
-    print(input$reimbursement)
-    print("program")
-    print(input$program)
     programName <- if(input$program == "NRCS Agricultural Conservation Easement Program (ACEP)") { 
       "ACEP" }else if(input$program == "NRCS Conservation Reserve Enhancement Program (CREP)") {
         "CREP"} else if(input$program == "NRCS Conservation Reserve Program (CRP)") {
@@ -199,23 +190,10 @@ server <- function(input, output, session) { # this is an edit
                   input$program}
     print(programName)
     TPdeliveryFactor <- filter(tpfact, domSlope == input$slope, distStream == input$streamDist)$tpfactor
-    print(TPdeliveryFactor)
     pCreditAc <- edgeOfFieldPsav() * TPdeliveryFactor
-    print(pCreditAc)
     pCreditTotalArea <- pCreditAc * input$acres
-    #print(pCreditTotalArea)
-    # pCreditLife <- pCreditTotalArea * input$years
-    # #print(pCreditLife)
-    # dollPerLbAcYr <- input$funds/pCreditTotalArea/input$years
-    # #print(dollPerLbAcYr)
-    # savingsComp <- savings() - dollPerLbAcYr
     netSavTransAcres <- savings() * pCreditTotalArea
-    print(netSavTransAcres)
-    #netSavTranLife <- savings() * pCreditLife
-    #print(netSavTranLife)
     programCost <- input$reimbursement * input$acres
-    print(programCost)
-    
 
     postText1_1(paste("I used", programName, "to transition", input$acres, "acres to", tolower(input$newPractice),
                     "and reduced my phosphorus footprint by", edgeOfFieldPsav(), "lbs/acre."))
